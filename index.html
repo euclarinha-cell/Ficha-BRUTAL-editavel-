@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ficha BRUTAL</title>
+
+<style>
+body{
+    margin:0;
+    background:#e5e5e5;
+    display:flex;
+    justify-content:center;
+    padding:20px;
+    font-family:Arial, sans-serif;
+}
+
+.ficha-wrapper{
+    width:100%;
+    max-width:900px;
+}
+
+.ficha{
+    background:white;
+    border:3px solid black;
+    padding:20px;
+    display:grid;
+    grid-template-columns: 2fr 1fr;
+    gap:20px;
+}
+
+/* topo */
+.topo{
+    grid-column:1 / 3;
+    display:grid;
+    grid-template-columns: repeat(4,1fr);
+    gap:10px;
+}
+
+.topo input{
+    border:2px solid black;
+    padding:6px;
+}
+
+/* aparência */
+.aparencia-box{
+    border:2px solid black;
+    padding:10px;
+}
+
+.preview{
+    width:100%;
+    height:200px;
+    border:2px solid black;
+    object-fit:cover;
+    margin-top:10px;
+}
+
+/* blocos */
+.bloco{
+    border:2px solid black;
+    padding:10px;
+}
+
+.titulo{
+    font-weight:bold;
+    margin-bottom:8px;
+}
+
+/* quadrados X */
+.quadrados{
+    display:flex;
+    gap:5px;
+}
+
+.quadrado{
+    width:30px;
+    height:30px;
+    border:2px solid black;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    font-weight:bold;
+    user-select:none;
+}
+
+/* tensão numérica */
+.tensao{
+    display:flex;
+    flex-wrap:wrap;
+    gap:5px;
+}
+
+.tensao input{
+    width:40px;
+    height:30px;
+    border:2px solid black;
+    text-align:center;
+}
+
+/* marcadores */
+.marcador-linha{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:6px;
+}
+
+.marcador-texto{
+    flex:1;
+    border:2px solid black;
+    height:30px;
+    padding:4px;
+}
+
+/* ferida */
+.ferida input{
+    width:60px;
+    height:35px;
+    border:2px solid black;
+    text-align:center;
+}
+
+/* responsivo */
+@media (max-width:700px){
+    .ficha{
+        grid-template-columns:1fr;
+    }
+    .topo{
+        grid-template-columns:1fr 1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="ficha-wrapper">
+<div class="ficha">
+
+<div class="topo">
+<input placeholder="Nome">
+<input placeholder="Intérprete">
+<input placeholder="Pronome">
+<input placeholder="Arquétipo">
+</div>
+
+<div class="bloco">
+<div class="titulo">Pilha de Fuga</div>
+<div class="quadrados" id="fuga"></div>
+
+<div class="titulo" style="margin-top:15px;">Pilha de Dados</div>
+<div class="quadrados" id="dados"></div>
+
+<div class="titulo" style="margin-top:15px;">Pontos de Tensão</div>
+<div class="tensao" id="tensao"></div>
+
+<div class="titulo" style="margin-top:15px;">Ferida</div>
+<div class="ferida">
+<input type="number">
+</div>
+
+<div class="titulo" style="margin-top:15px;">Marcadores</div>
+
+<div class="marcador-linha">
+<div class="quadrado" onclick="toggle(this)"></div>
+<input class="marcador-texto" type="text">
+</div>
+
+<div class="marcador-linha">
+<div class="quadrado" onclick="toggle(this)"></div>
+<input class="marcador-texto" type="text">
+</div>
+
+</div>
+
+<div class="aparencia-box">
+<div class="titulo">Aparência</div>
+<input type="file" accept="image/*" onchange="carregarImagem(event)">
+<img id="preview" class="preview">
+</div>
+
+</div>
+</div>
+
+<script>
+function criarQuadrados(id, quantidade){
+    const container = document.getElementById(id);
+    for(let i=0;i<quantidade;i++){
+        const div = document.createElement("div");
+        div.classList.add("quadrado");
+        div.onclick = function(){
+            toggle(div);
+        }
+        container.appendChild(div);
+    }
+}
+
+function toggle(el){
+    el.innerText = el.innerText === "X" ? "" : "X";
+}
+
+function criarTensao(){
+    const container = document.getElementById("tensao");
+    for(let i=0;i<10;i++){
+        const input = document.createElement("input");
+        input.type="number";
+        container.appendChild(input);
+    }
+}
+
+function carregarImagem(event){
+    const img = document.getElementById("preview");
+    img.src = URL.createObjectURL(event.target.files[0]);
+}
+
+criarQuadrados("fuga",7);
+criarQuadrados("dados",6);
+criarTensao();
+</script>
+
+</body>
+</html>
