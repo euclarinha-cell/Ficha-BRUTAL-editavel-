@@ -6,41 +6,49 @@
 <title>Ficha BRUTAL</title>
 
 <style>
-  :root{
-    /* Tamanho “original” da arte para referência (a imagem que você mandou é ~696x397) */
-    --w: 696;
-    --h: 397;
-  }
+  :root{ --w:696; --h:397; }
 
   body{
     margin:0;
     background:#111;
-    font-family: Arial, sans-serif;
+    font-family:Arial, sans-serif;
     display:flex;
     justify-content:center;
     padding:16px;
   }
 
-  /* Mantém proporção, responsivo */
-  .stage{
-    width:min(1100px, 100%);
-  }
+  .stage{ width:min(1100px, 100%); }
 
   .sheet{
     position:relative;
     width:100%;
     aspect-ratio: calc(var(--w) / var(--h));
-    background:url("ficha-bg.png") no-repeat center center;
+    background:#000;
+    background-repeat:no-repeat;
+    background-position:center;
     background-size:contain;
+    border:0;
   }
 
-  /* Camada de interação (tudo por cima) */
-  .ui{
+  .ui{ position:absolute; inset:0; }
+
+  /* Mensagem de erro quando a imagem não carrega */
+  .banner{
     position:absolute;
-    inset:0;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    width:min(520px, 92%);
+    background:rgba(0,0,0,.85);
+    color:#fff;
+    border:2px solid #fff;
+    padding:14px 16px;
+    font-size:14px;
+    line-height:1.35;
+    display:none;
   }
+  .banner b{ display:block; margin-bottom:6px; }
 
-  /* Inputs “invisíveis” por padrão (não alteram a arte) */
   .txt, .num, .miniTxt{
     position:absolute;
     border:none;
@@ -52,7 +60,6 @@
     padding:0;
   }
 
-  /* Caixas que na arte são brancas: aqui a gente mantém branco */
   .whiteBox{
     position:absolute;
     border:none;
@@ -65,7 +72,6 @@
     resize:none;
   }
 
-  /* Retângulos dos marcadores (são brancos na arte) */
   .markerText{
     position:absolute;
     border:none;
@@ -77,25 +83,22 @@
     padding:4px 6px;
   }
 
-  /* Quadrado de número (marcadores) */
   .markerNum{
     position:absolute;
     border:none;
     outline:none;
     background:transparent;
     color:#fff;
-    font-weight:800;
+    font-weight:900;
     text-align:center;
     font-size: clamp(10px, 1.8vw, 16px);
   }
 
-  /* Botões “invisíveis” para X */
   .hit{
     position:absolute;
     cursor:pointer;
     user-select:none;
   }
-
   .hit::after{
     content: attr(data-x);
     position:absolute;
@@ -109,20 +112,17 @@
     text-shadow: 0 0 2px rgba(0,0,0,.85);
   }
 
-  /* Upload da aparência + preview por cima da área */
   .file{
     position:absolute;
     opacity:0;
     cursor:pointer;
   }
-
   .apImg{
     position:absolute;
     object-fit:cover;
     display:none;
   }
 
-  /* Quadrado escrevível menor abaixo da aparência */
   .miniTxt{
     background:transparent;
     color:#fff;
@@ -135,61 +135,50 @@
 
 <body>
   <div class="stage">
-    <div class="sheet">
-      <div class="ui" id="ui">
+    <div class="sheet" id="sheet">
+      <div class="ui">
 
-        <!-- CAMPOS DO TOPO (percentuais para escalar perfeito) -->
-        <!-- Nome -->
-        <input class="txt" style="left:33.0%; top:6.0%; width:24.5%; height:5.2%;" placeholder="" />
-        <!-- Intérprete -->
-        <input class="txt" style="left:33.0%; top:12.0%; width:24.5%; height:5.2%;" placeholder="" />
-        <!-- Pronomes -->
-        <input class="txt" style="left:63.0%; top:6.0%; width:24.5%; height:5.2%;" placeholder="" />
-        <!-- Arquétipo -->
-        <input class="txt" style="left:63.0%; top:12.0%; width:24.5%; height:5.2%;" placeholder="" />
+        <!-- topo -->
+        <input class="txt" style="left:33.0%; top:6.0%; width:24.5%; height:5.2%;" />
+        <input class="txt" style="left:33.0%; top:12.0%; width:24.5%; height:5.2%;" />
+        <input class="txt" style="left:63.0%; top:6.0%; width:24.5%; height:5.2%;" />
+        <input class="txt" style="left:63.0%; top:12.0%; width:24.5%; height:5.2%;" />
 
-        <!-- PILHA DE DADOS (6 quadrados: 2 linhas x 3 colunas) -->
-        <!-- Ajustei para bater com a arte: bloco superior esquerdo -->
-        <!-- Linha 1 -->
+        <!-- pilha de dados 6 -->
         <div class="hit" data-x="" style="left:7.8%; top:27.3%; width:5.6%; height:10.2%;" data-key="dados-1"></div>
         <div class="hit" data-x="" style="left:15.0%; top:27.3%; width:5.6%; height:10.2%;" data-key="dados-2"></div>
         <div class="hit" data-x="" style="left:22.2%; top:27.3%; width:5.6%; height:10.2%;" data-key="dados-3"></div>
-        <!-- Linha 2 -->
         <div class="hit" data-x="" style="left:7.8%; top:39.0%; width:5.6%; height:10.2%;" data-key="dados-4"></div>
         <div class="hit" data-x="" style="left:15.0%; top:39.0%; width:5.6%; height:10.2%;" data-key="dados-5"></div>
         <div class="hit" data-x="" style="left:22.2%; top:39.0%; width:5.6%; height:10.2%;" data-key="dados-6"></div>
 
-        <!-- PILHA DE FUGA (7 quadrados: 3x2 + 1 embaixo no meio) -->
-        <!-- Linha 1 -->
+        <!-- pilha de fuga 7 -->
         <div class="hit" data-x="" style="left:7.8%; top:62.3%; width:5.6%; height:10.2%;" data-key="fuga-1"></div>
         <div class="hit" data-x="" style="left:15.0%; top:62.3%; width:5.6%; height:10.2%;" data-key="fuga-2"></div>
         <div class="hit" data-x="" style="left:22.2%; top:62.3%; width:5.6%; height:10.2%;" data-key="fuga-3"></div>
-        <!-- Linha 2 -->
         <div class="hit" data-x="" style="left:7.8%; top:74.0%; width:5.6%; height:10.2%;" data-key="fuga-4"></div>
         <div class="hit" data-x="" style="left:15.0%; top:74.0%; width:5.6%; height:10.2%;" data-key="fuga-5"></div>
         <div class="hit" data-x="" style="left:22.2%; top:74.0%; width:5.6%; height:10.2%;" data-key="fuga-6"></div>
-        <!-- Extra embaixo (no meio) -->
         <div class="hit" data-x="" style="left:15.0%; top:85.2%; width:5.6%; height:10.2%;" data-key="fuga-7"></div>
 
-        <!-- FERIDA (1 numérico) -->
+        <!-- ferida numero -->
         <input class="num" type="number" style="left:43.4%; top:30.0%; width:6.0%; height:8.8%; font-size:clamp(12px,2vw,18px); color:#fff; text-align:center;" />
 
-        <!-- MARCADORES (2): quadrado numérico + retângulo branco editável -->
+        <!-- marcadores 2 -->
         <input class="markerNum" type="number" style="left:62.0%; top:30.0%; width:5.0%; height:8.8%;" />
         <input class="markerText" type="text" style="left:68.2%; top:30.4%; width:19.2%; height:7.8%;" />
 
         <input class="markerNum" type="number" style="left:62.0%; top:41.5%; width:5.0%; height:8.8%;" />
         <input class="markerText" type="text" style="left:68.2%; top:41.9%; width:19.2%; height:7.8%;" />
 
-        <!-- SEQUELA (5 quadradinhos) - deixei clicável com X também, porque combina com o sistema e não muda a arte -->
+        <!-- sequela 5 (X) -->
         <div class="hit" data-x="" style="left:47.6%; top:44.0%; width:2.8%; height:5.2%;" data-key="seq-1"></div>
         <div class="hit" data-x="" style="left:51.0%; top:44.0%; width:2.8%; height:5.2%;" data-key="seq-2"></div>
         <div class="hit" data-x="" style="left:54.4%; top:44.0%; width:2.8%; height:5.2%;" data-key="seq-3"></div>
         <div class="hit" data-x="" style="left:57.8%; top:44.0%; width:2.8%; height:5.2%;" data-key="seq-4"></div>
         <div class="hit" data-x="" style="left:61.2%; top:44.0%; width:2.8%; height:5.2%;" data-key="seq-5"></div>
 
-        <!-- PONTOS DE TENSÃO (10 chamas) - X clicável -->
-        <!-- Região central inferior -->
+        <!-- pontos de tensão 10 (X) -->
         <div class="hit" data-x="" style="left:42.0%; top:53.6%; width:3.0%; height:6.0%;" data-key="ten-1"></div>
         <div class="hit" data-x="" style="left:45.1%; top:53.6%; width:3.0%; height:6.0%;" data-key="ten-2"></div>
         <div class="hit" data-x="" style="left:48.2%; top:53.6%; width:3.0%; height:6.0%;" data-key="ten-3"></div>
@@ -201,47 +190,87 @@
         <div class="hit" data-x="" style="left:66.8%; top:53.6%; width:3.0%; height:6.0%;" data-key="ten-9"></div>
         <div class="hit" data-x="" style="left:69.9%; top:53.6%; width:3.0%; height:6.0%;" data-key="ten-10"></div>
 
-        <!-- HABILIDADE & VANTAGENS (textarea branco grande) -->
+        <!-- habilidade & vantagens -->
         <textarea class="whiteBox" style="left:38.0%; top:66.8%; width:36.7%; height:26.0%;"></textarea>
 
-        <!-- APARÊNCIA (caixa direita) -->
-        <!-- Upload invisível sobre a área da aparência -->
+        <!-- aparência -->
         <input class="file" type="file" accept="image/*"
                style="left:77.8%; top:66.8%; width:12.8%; height:26.0%;"
                id="apFile" />
-        <!-- Preview da imagem dentro da área -->
         <img class="apImg" id="apImg" style="left:77.8%; top:66.8%; width:12.8%; height:26.0%;" />
 
-        <!-- QUADRADO ESCREVÍVEL MENOR LOGO ABAIXO DA APARÊNCIA -->
-        <!-- “Logo abaixo” dentro do mesmo bloco visual, sem mexer na arte -->
+        <!-- quadrado escrevível menor abaixo -->
         <input class="miniTxt" type="text" maxlength="2"
                style="left:78.4%; top:93.5%; width:3.6%; height:5.8%;" />
 
-        <!-- LATERAL DIREITA (5 caixinhas) - X clicável -->
+        <!-- lateral direita 5 (X) -->
         <div class="hit" data-x="" style="left:93.6%; top:20.4%; width:2.2%; height:4.2%;" data-key="lado-1"></div>
         <div class="hit" data-x="" style="left:93.6%; top:35.3%; width:2.2%; height:4.2%;" data-key="lado-2"></div>
         <div class="hit" data-x="" style="left:93.6%; top:50.2%; width:2.2%; height:4.2%;" data-key="lado-3"></div>
         <div class="hit" data-x="" style="left:93.6%; top:65.1%; width:2.2%; height:4.2%;" data-key="lado-4"></div>
         <div class="hit" data-x="" style="left:93.6%; top:80.0%; width:2.2%; height:4.2%;" data-key="lado-5"></div>
 
+        <div class="banner" id="banner">
+          <b>Imagem de fundo não carregou.</b>
+          Coloque a imagem da ficha no repositório com o nome <b>ficha-bg.png</b> (na mesma pasta do index.html),
+          ou crie uma pasta <b>img</b> e use <b>img/ficha-bg.png</b>.
+          <br><br>
+          Se a imagem tiver outro nome, renomeia para <b>ficha-bg.png</b>. Maiúsculas importam.
+        </div>
+
       </div>
     </div>
   </div>
 
 <script>
-  // Toggle X nos elementos clicáveis
-  function toggleX(el){
-    el.dataset.x = (el.dataset.x === "X") ? "" : "X";
+  // 1) Background: tenta várias possibilidades
+  const sheet = document.getElementById("sheet");
+  const banner = document.getElementById("banner");
+
+  const candidates = [
+    "ficha-bg.png",
+    "ficha-bg.jpg",
+    "ficha.png",
+    "bg.png",
+    "img/ficha-bg.png",
+    "img/ficha-bg.jpg",
+    "img/ficha.png"
+  ];
+
+  async function tryLoad(url){
+    return new Promise((resolve)=>{
+      const img = new Image();
+      img.onload = ()=>resolve(true);
+      img.onerror = ()=>resolve(false);
+      img.src = url + "?v=" + Date.now();
+    });
   }
 
+  (async ()=>{
+    let ok = false;
+    for(const c of candidates){
+      // eslint-disable-next-line no-await-in-loop
+      ok = await tryLoad(c);
+      if(ok){
+        sheet.style.backgroundImage = `url("${c}")`;
+        break;
+      }
+    }
+    if(!ok){
+      banner.style.display = "block";
+    }
+  })();
+
+  // 2) Toggle X
   document.querySelectorAll(".hit").forEach(el=>{
-    el.addEventListener("click", ()=>toggleX(el));
+    el.addEventListener("click", ()=>{
+      el.dataset.x = (el.dataset.x === "X") ? "" : "X";
+    });
   });
 
-  // Upload e preview da imagem de aparência
+  // 3) Upload aparência
   const apFile = document.getElementById("apFile");
   const apImg  = document.getElementById("apImg");
-
   apFile.addEventListener("change", (e)=>{
     const file = e.target.files && e.target.files[0];
     if(!file) return;
