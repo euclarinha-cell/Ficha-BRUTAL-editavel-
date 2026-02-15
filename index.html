@@ -1,143 +1,253 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ficha</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ficha BRUTAL</title>
 
 <style>
-body{
+  :root{
+    /* Tamanho “original” da arte para referência (a imagem que você mandou é ~696x397) */
+    --w: 696;
+    --h: 397;
+  }
+
+  body{
     margin:0;
-    padding:20px;
-    background:#e5e5e5;
-    font-family:Arial, sans-serif;
+    background:#111;
+    font-family: Arial, sans-serif;
     display:flex;
     justify-content:center;
-}
+    padding:16px;
+  }
 
-.ficha{
-    background:white;
-    width:900px;
-    max-width:100%;
-    border:3px solid black;
-    padding:20px;
-    display:grid;
-    grid-template-columns:2fr 1fr;
-    gap:20px;
-}
+  /* Mantém proporção, responsivo */
+  .stage{
+    width:min(1100px, 100%);
+  }
 
-.bloco{
-    border:2px solid black;
-    padding:10px;
-}
+  .sheet{
+    position:relative;
+    width:100%;
+    aspect-ratio: calc(var(--w) / var(--h));
+    background:url("ficha-bg.png") no-repeat center center;
+    background-size:contain;
+  }
 
-.titulo{
-    font-weight:bold;
-    margin:10px 0 5px 0;
-}
+  /* Camada de interação (tudo por cima) */
+  .ui{
+    position:absolute;
+    inset:0;
+  }
 
-.quadrados{
-    display:flex;
-    gap:6px;
-    flex-wrap:wrap;
-}
+  /* Inputs “invisíveis” por padrão (não alteram a arte) */
+  .txt, .num, .miniTxt{
+    position:absolute;
+    border:none;
+    outline:none;
+    background:transparent;
+    color:#111;
+    font-weight:700;
+    font-size: clamp(10px, 1.6vw, 14px);
+    padding:0;
+  }
 
-.quadrado{
-    width:35px;
-    height:35px;
-    border:2px solid black;
+  /* Caixas que na arte são brancas: aqui a gente mantém branco */
+  .whiteBox{
+    position:absolute;
+    border:none;
+    outline:none;
+    background:#fff;
+    color:#111;
+    font-weight:600;
+    font-size: clamp(10px, 1.6vw, 14px);
+    padding:6px;
+    resize:none;
+  }
+
+  /* Retângulos dos marcadores (são brancos na arte) */
+  .markerText{
+    position:absolute;
+    border:none;
+    outline:none;
+    background:#fff;
+    color:#111;
+    font-weight:700;
+    font-size: clamp(10px, 1.6vw, 14px);
+    padding:4px 6px;
+  }
+
+  /* Quadrado de número (marcadores) */
+  .markerNum{
+    position:absolute;
+    border:none;
+    outline:none;
+    background:transparent;
+    color:#fff;
+    font-weight:800;
+    text-align:center;
+    font-size: clamp(10px, 1.8vw, 16px);
+  }
+
+  /* Botões “invisíveis” para X */
+  .hit{
+    position:absolute;
+    cursor:pointer;
+    user-select:none;
+  }
+
+  .hit::after{
+    content: attr(data-x);
+    position:absolute;
+    inset:0;
     display:flex;
     align-items:center;
     justify-content:center;
+    color:#fff;
+    font-weight:900;
+    font-size: clamp(12px, 2.2vw, 18px);
+    text-shadow: 0 0 2px rgba(0,0,0,.85);
+  }
+
+  /* Upload da aparência + preview por cima da área */
+  .file{
+    position:absolute;
+    opacity:0;
     cursor:pointer;
-    font-weight:bold;
-}
+  }
 
-.quadrado-num{
-    width:35px;
-    height:35px;
-    border:2px solid black;
-    text-align:center;
-}
-
-.quadrado-escrevivel{
-    width:28px;
-    height:28px;
-    border:2px solid black;
-    text-align:center;
-    font-size:14px;
-    margin-top:10px;
-}
-
-.preview{
-    width:100%;
-    height:250px;
-    border:2px solid black;
+  .apImg{
+    position:absolute;
     object-fit:cover;
-    margin-top:10px;
-}
+    display:none;
+  }
+
+  /* Quadrado escrevível menor abaixo da aparência */
+  .miniTxt{
+    background:transparent;
+    color:#fff;
+    font-weight:900;
+    text-align:center;
+    font-size: clamp(10px, 1.6vw, 14px);
+  }
 </style>
 </head>
 
 <body>
+  <div class="stage">
+    <div class="sheet">
+      <div class="ui" id="ui">
 
-<div class="ficha">
+        <!-- CAMPOS DO TOPO (percentuais para escalar perfeito) -->
+        <!-- Nome -->
+        <input class="txt" style="left:33.0%; top:6.0%; width:24.5%; height:5.2%;" placeholder="" />
+        <!-- Intérprete -->
+        <input class="txt" style="left:33.0%; top:12.0%; width:24.5%; height:5.2%;" placeholder="" />
+        <!-- Pronomes -->
+        <input class="txt" style="left:63.0%; top:6.0%; width:24.5%; height:5.2%;" placeholder="" />
+        <!-- Arquétipo -->
+        <input class="txt" style="left:63.0%; top:12.0%; width:24.5%; height:5.2%;" placeholder="" />
 
-<div class="bloco">
+        <!-- PILHA DE DADOS (6 quadrados: 2 linhas x 3 colunas) -->
+        <!-- Ajustei para bater com a arte: bloco superior esquerdo -->
+        <!-- Linha 1 -->
+        <div class="hit" data-x="" style="left:7.8%; top:27.3%; width:5.6%; height:10.2%;" data-key="dados-1"></div>
+        <div class="hit" data-x="" style="left:15.0%; top:27.3%; width:5.6%; height:10.2%;" data-key="dados-2"></div>
+        <div class="hit" data-x="" style="left:22.2%; top:27.3%; width:5.6%; height:10.2%;" data-key="dados-3"></div>
+        <!-- Linha 2 -->
+        <div class="hit" data-x="" style="left:7.8%; top:39.0%; width:5.6%; height:10.2%;" data-key="dados-4"></div>
+        <div class="hit" data-x="" style="left:15.0%; top:39.0%; width:5.6%; height:10.2%;" data-key="dados-5"></div>
+        <div class="hit" data-x="" style="left:22.2%; top:39.0%; width:5.6%; height:10.2%;" data-key="dados-6"></div>
 
-<div class="titulo">Pilha de Fuga</div>
-<div class="quadrados" id="fuga"></div>
+        <!-- PILHA DE FUGA (7 quadrados: 3x2 + 1 embaixo no meio) -->
+        <!-- Linha 1 -->
+        <div class="hit" data-x="" style="left:7.8%; top:62.3%; width:5.6%; height:10.2%;" data-key="fuga-1"></div>
+        <div class="hit" data-x="" style="left:15.0%; top:62.3%; width:5.6%; height:10.2%;" data-key="fuga-2"></div>
+        <div class="hit" data-x="" style="left:22.2%; top:62.3%; width:5.6%; height:10.2%;" data-key="fuga-3"></div>
+        <!-- Linha 2 -->
+        <div class="hit" data-x="" style="left:7.8%; top:74.0%; width:5.6%; height:10.2%;" data-key="fuga-4"></div>
+        <div class="hit" data-x="" style="left:15.0%; top:74.0%; width:5.6%; height:10.2%;" data-key="fuga-5"></div>
+        <div class="hit" data-x="" style="left:22.2%; top:74.0%; width:5.6%; height:10.2%;" data-key="fuga-6"></div>
+        <!-- Extra embaixo (no meio) -->
+        <div class="hit" data-x="" style="left:15.0%; top:85.2%; width:5.6%; height:10.2%;" data-key="fuga-7"></div>
 
-<div class="titulo">Pilha de Dados</div>
-<div class="quadrados" id="dados"></div>
+        <!-- FERIDA (1 numérico) -->
+        <input class="num" type="number" style="left:43.4%; top:30.0%; width:6.0%; height:8.8%; font-size:clamp(12px,2vw,18px); color:#fff; text-align:center;" />
 
-<div class="titulo">Pontos de Tensão</div>
-<div class="quadrados" id="tensao"></div>
+        <!-- MARCADORES (2): quadrado numérico + retângulo branco editável -->
+        <input class="markerNum" type="number" style="left:62.0%; top:30.0%; width:5.0%; height:8.8%;" />
+        <input class="markerText" type="text" style="left:68.2%; top:30.4%; width:19.2%; height:7.8%;" />
 
-<div class="titulo">Ferida</div>
-<input type="number">
+        <input class="markerNum" type="number" style="left:62.0%; top:41.5%; width:5.0%; height:8.8%;" />
+        <input class="markerText" type="text" style="left:68.2%; top:41.9%; width:19.2%; height:7.8%;" />
 
-<div class="titulo">Marcadores</div>
-<input class="quadrado-num" type="number">
-<input class="quadrado-num" type="number">
+        <!-- SEQUELA (5 quadradinhos) - deixei clicável com X também, porque combina com o sistema e não muda a arte -->
+        <div class="hit" data-x="" style="left:47.6%; top:44.0%; width:2.8%; height:5.2%;" data-key="seq-1"></div>
+        <div class="hit" data-x="" style="left:51.0%; top:44.0%; width:2.8%; height:5.2%;" data-key="seq-2"></div>
+        <div class="hit" data-x="" style="left:54.4%; top:44.0%; width:2.8%; height:5.2%;" data-key="seq-3"></div>
+        <div class="hit" data-x="" style="left:57.8%; top:44.0%; width:2.8%; height:5.2%;" data-key="seq-4"></div>
+        <div class="hit" data-x="" style="left:61.2%; top:44.0%; width:2.8%; height:5.2%;" data-key="seq-5"></div>
 
-</div>
+        <!-- PONTOS DE TENSÃO (10 chamas) - X clicável -->
+        <!-- Região central inferior -->
+        <div class="hit" data-x="" style="left:42.0%; top:53.6%; width:3.0%; height:6.0%;" data-key="ten-1"></div>
+        <div class="hit" data-x="" style="left:45.1%; top:53.6%; width:3.0%; height:6.0%;" data-key="ten-2"></div>
+        <div class="hit" data-x="" style="left:48.2%; top:53.6%; width:3.0%; height:6.0%;" data-key="ten-3"></div>
+        <div class="hit" data-x="" style="left:51.3%; top:53.6%; width:3.0%; height:6.0%;" data-key="ten-4"></div>
+        <div class="hit" data-x="" style="left:54.4%; top:53.6%; width:3.0%; height:6.0%;" data-key="ten-5"></div>
+        <div class="hit" data-x="" style="left:57.5%; top:53.6%; width:3.0%; height:6.0%;" data-key="ten-6"></div>
+        <div class="hit" data-x="" style="left:60.6%; top:53.6%; width:3.0%; height:6.0%;" data-key="ten-7"></div>
+        <div class="hit" data-x="" style="left:63.7%; top:53.6%; width:3.0%; height:6.0%;" data-key="ten-8"></div>
+        <div class="hit" data-x="" style="left:66.8%; top:53.6%; width:3.0%; height:6.0%;" data-key="ten-9"></div>
+        <div class="hit" data-x="" style="left:69.9%; top:53.6%; width:3.0%; height:6.0%;" data-key="ten-10"></div>
 
-<div class="bloco">
+        <!-- HABILIDADE & VANTAGENS (textarea branco grande) -->
+        <textarea class="whiteBox" style="left:38.0%; top:66.8%; width:36.7%; height:26.0%;"></textarea>
 
-<div class="titulo">Aparência</div>
-<input type="file" accept="image/*" onchange="carregarImagem(event)">
-<img id="preview" class="preview">
+        <!-- APARÊNCIA (caixa direita) -->
+        <!-- Upload invisível sobre a área da aparência -->
+        <input class="file" type="file" accept="image/*"
+               style="left:77.8%; top:66.8%; width:12.8%; height:26.0%;"
+               id="apFile" />
+        <!-- Preview da imagem dentro da área -->
+        <img class="apImg" id="apImg" style="left:77.8%; top:66.8%; width:12.8%; height:26.0%;" />
 
-<!-- QUADRADO ESCREVÍVEL -->
-<input type="text" class="quadrado-escrevivel" maxlength="2">
+        <!-- QUADRADO ESCREVÍVEL MENOR LOGO ABAIXO DA APARÊNCIA -->
+        <!-- “Logo abaixo” dentro do mesmo bloco visual, sem mexer na arte -->
+        <input class="miniTxt" type="text" maxlength="2"
+               style="left:78.4%; top:93.5%; width:3.6%; height:5.8%;" />
 
-</div>
+        <!-- LATERAL DIREITA (5 caixinhas) - X clicável -->
+        <div class="hit" data-x="" style="left:93.6%; top:20.4%; width:2.2%; height:4.2%;" data-key="lado-1"></div>
+        <div class="hit" data-x="" style="left:93.6%; top:35.3%; width:2.2%; height:4.2%;" data-key="lado-2"></div>
+        <div class="hit" data-x="" style="left:93.6%; top:50.2%; width:2.2%; height:4.2%;" data-key="lado-3"></div>
+        <div class="hit" data-x="" style="left:93.6%; top:65.1%; width:2.2%; height:4.2%;" data-key="lado-4"></div>
+        <div class="hit" data-x="" style="left:93.6%; top:80.0%; width:2.2%; height:4.2%;" data-key="lado-5"></div>
 
-</div>
+      </div>
+    </div>
+  </div>
 
 <script>
-function criarQuadrados(id, quantidade){
-    const container = document.getElementById(id);
-    for(let i=0;i<quantidade;i++){
-        const div = document.createElement("div");
-        div.className = "quadrado";
-        div.onclick = function(){
-            div.textContent = div.textContent === "X" ? "" : "X";
-        }
-        container.appendChild(div);
-    }
-}
+  // Toggle X nos elementos clicáveis
+  function toggleX(el){
+    el.dataset.x = (el.dataset.x === "X") ? "" : "X";
+  }
 
-function carregarImagem(event){
-    const img = document.getElementById("preview");
-    img.src = URL.createObjectURL(event.target.files[0]);
-}
+  document.querySelectorAll(".hit").forEach(el=>{
+    el.addEventListener("click", ()=>toggleX(el));
+  });
 
-criarQuadrados("fuga",7);
-criarQuadrados("dados",6);
-criarQuadrados("tensao",10);
+  // Upload e preview da imagem de aparência
+  const apFile = document.getElementById("apFile");
+  const apImg  = document.getElementById("apImg");
+
+  apFile.addEventListener("change", (e)=>{
+    const file = e.target.files && e.target.files[0];
+    if(!file) return;
+    apImg.src = URL.createObjectURL(file);
+    apImg.style.display = "block";
+  });
 </script>
-
 </body>
 </html>
