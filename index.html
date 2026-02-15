@@ -78,15 +78,16 @@ body{
     font-size:16px;
 }
 
-/* NOVO QUADRADO ESCREVÍVEL */
+/* QUADRADO ESCREVÍVEL MENOR */
 .quadrado-escrevivel{
-    width:35px;
-    height:35px;
+    width:28px;
+    height:28px;
     border:2px solid black;
     text-align:center;
     font-weight:bold;
-    font-size:16px;
+    font-size:14px;
     padding:0;
+    margin-top:10px;
 }
 
 /* MARCADORES */
@@ -116,6 +117,8 @@ body{
 .aparencia{
     border:2px solid black;
     padding:10px;
+    display:flex;
+    flex-direction:column;
 }
 
 .preview{
@@ -177,15 +180,16 @@ body{
 <input class="marcador-texto" type="text">
 </div>
 
-<div class="titulo" style="margin-top:15px;">Quadrado Especial</div>
-<input type="text" class="quadrado-escrevivel" maxlength="2">
-
 </div>
 
 <div class="aparencia">
 <div class="titulo">Aparência</div>
 <input type="file" accept="image/*" onchange="carregarImagem(event)">
 <img id="preview" class="preview">
+
+<!-- QUADRADO ESCREVÍVEL LOGO ABAIXO DA IMAGEM -->
+<input type="text" class="quadrado-escrevivel" maxlength="2">
+
 </div>
 
 </div>
@@ -215,4 +219,3 @@ criarQuadrados("tensao",10);
 
 </body>
 </html>
-
